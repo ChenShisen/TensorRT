@@ -71,6 +71,7 @@ class MnistModel(object):
             num_workers=1,
             timeout=600)
         self.network = Net()
+        self.network = self.network.cuda()
 
     # Train the network for one or more epochs, validating after each epoch.
     def learn(self, num_epochs=2):
@@ -80,6 +81,8 @@ class MnistModel(object):
             optimizer = optim.SGD(self.network.parameters(), lr=self.learning_rate, momentum=self.sgd_momentum)
             for batch, (data, target) in enumerate(self.train_loader):
                 data, target = Variable(data), Variable(target)
+                data = data.cuda()
+                target = target.cuda()
                 optimizer.zero_grad()
                 output = self.network(data)
                 loss = F.nll_loss(output, target)
@@ -96,6 +99,8 @@ class MnistModel(object):
             for data, target in self.test_loader:
                 with torch.no_grad():
                     data, target = Variable(data), Variable(target)
+                data = data.cuda()
+                target = target.cuda()
                 output = self.network(data)
                 test_loss += F.nll_loss(output, target).data.item()
                 pred = output.data.max(1)[1]
